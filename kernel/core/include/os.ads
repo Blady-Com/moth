@@ -74,31 +74,11 @@ is
    type os_mbx_msg_t is range 0 .. 2 ** OS_MBX_MSG_SZ - 1;
    for os_mbx_msg_t'Size use OS_MBX_MSG_SZ;
 
-   subtype os_virtual_address_t is types.uint32_t;
-
    type os_mbx_entry_t is record
       sender_id        : os_task_id_t;
       msg              : os_mbx_msg_t;
    end record;
    pragma Convention (C_Pass_By_Copy, os_mbx_entry_t);
-
-   type os_task_section_t is record
-      virtual_address  : os_virtual_address_t;
-      size             : os_size_t;
-   end record;
-   pragma Convention (C_Pass_By_Copy, os_task_section_t);
-
-   type os_task_ro_t is record
-      priority         : os_priority_t;
-      mbx_permission   : os_mbx_mask_t;
-      text             : os_task_section_t;
-      bss              : os_task_section_t;
-      stack            : os_task_section_t;
-   end record;
-   pragma Convention (C_Pass_By_Copy, os_task_ro_t);
-
-   os_task_ro : constant array (os_task_id_param_t) of os_task_ro_t;
-   pragma Import (C, os_task_ro, "os_task_ro");
 
    function os_ghost_task_mbx_are_well_formed (task_id : os_task_id_param_t) return Boolean
    with
