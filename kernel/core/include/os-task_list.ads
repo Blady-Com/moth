@@ -34,9 +34,11 @@ package os.task_list with
       Ghost => True;
 
    function os_ghost_task_list_is_well_formed return Boolean with
-      Ghost => True;
+      Ghost  => True,
+      Global => (Input => Os_Task_State);
 
-   procedure os_ghost_task_ready_init (task_id : os_task_id_t);
+   procedure os_ghost_task_ready_init (task_id : os_task_id_t) with
+      Ghost => True;
 
    function os_ghost_task_is_ready
      (task_id : os_task_id_param_t) return Boolean with

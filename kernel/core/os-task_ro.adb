@@ -1,4 +1,5 @@
-package body os.task_ro is
+package body os.task_ro with
+     Refined_State => (Os_Task_Ro_State => (os_task_ro)) is
 
    subtype os_virtual_address_t is types.uint32_t;
 

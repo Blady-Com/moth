@@ -1,5 +1,6 @@
 with Interfaces.C;
-package os.task_mbx is
+package os.task_mbx with
+     Abstract_State => Os_Task_Mbx_State is
 
    use type Interfaces.C.signed_char;
    use type Interfaces.C.unsigned_char;
@@ -14,7 +15,8 @@ package os.task_mbx is
 
    --  Check if the mbx fifo of a given task is full.
 
-   function os_mbx_is_full (task_id : os_task_id_param_t) return Boolean;
+   function os_mbx_is_full (task_id : os_task_id_param_t) return Boolean with
+      Global => (Input => Os_Task_Mbx_State);
 
    --  Retrieve the mbx head index of the given task.
 
@@ -41,7 +43,6 @@ package os.task_mbx is
       --  Increment the mbx count of the given task.
 
    procedure os_mbx_inc_mbx_count (task_id : os_task_id_param_t) with
---        Global => (In_Out => os_task_mbx_rw),
       Pre  => (not os_mbx_is_full (task_id)),
       Post =>
       (os_mbx_get_mbx_count (task_id) =
@@ -50,7 +51,6 @@ package os.task_mbx is
       --  Decrement the mbx count of the given task.
 
    procedure os_mbx_dec_mbx_count (task_id : os_task_id_param_t) with
---        Global => (In_Out => os_task_mbx_rw),
       Pre  => (os_mbx_get_mbx_count (task_id) > os_mbx_count_t'First),
       Post =>
       (os_mbx_get_mbx_count (task_id) =
@@ -66,7 +66,6 @@ package os.task_mbx is
      (dest_id : os_task_id_param_t;
       src_id  : os_task_id_param_t;
       mbx_msg : os_mbx_msg_t) with
---        Global => (In_Out => os_task_mbx_rw),
       Pre =>
       ((not os_mbx_is_full (dest_id)) and
        os_ghost_task_mbx_are_well_formed (dest_id)),

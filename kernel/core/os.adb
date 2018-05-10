@@ -57,10 +57,12 @@ package body os with
 
    procedure os_sched_schedule (task_id : out os_task_id_param_t)
    with
-   Global => (Output => os_task_current),
-   Pre => os_ghost_task_list_is_well_formed,
-   Post => os_ghost_task_list_is_well_formed and then
-           os_ghost_task_is_ready (task_id)
+      Global => (Input => os.task_ro.OS_Task_RO_State,
+                  In_Out => os.task_list.OS_Task_State,
+                  Output => os_task_current),
+      Pre => os_ghost_task_list_is_well_formed,
+      Post => os_ghost_task_list_is_well_formed and then
+              os_ghost_task_is_ready (task_id)
    is
    begin
       --  Check interrupt status
@@ -129,7 +131,8 @@ package body os with
       dest_id :     os_task_id_param_t;
       mbx_msg :     os_mbx_msg_t)
    with
-      Global => (Input  => (os_task_current)),
+      Global => (Input  => (os_task_current, os.task_ro.OS_Task_RO_State),
+                 In_Out => (os.task_list.OS_Task_State, os.task_mbx.OS_Task_Mbx_State)),
       Pre => os_ghost_task_list_is_well_formed and then
              os_ghost_current_task_is_ready,
       Post => os_ghost_task_list_is_well_formed and then
@@ -165,7 +168,8 @@ package body os with
      (status  : out os_status_t;
       mbx_msg :     os_mbx_msg_t)
    with
-      Global => (Input  => (os_task_current)),
+      Global => (Input  => (os_task_current, os.task_ro.OS_Task_RO_State),
+                 In_Out => (os.task_list.OS_Task_State, os.task_mbx.OS_Task_Mbx_State)),
       Pre => os_ghost_task_list_is_well_formed and then
              os_ghost_current_task_is_ready,
       Post => os_ghost_task_list_is_well_formed and then

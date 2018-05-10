@@ -36,7 +36,7 @@ is
    -------------------------------------
 
    os_ghost_task_ready : array (os_task_id_param_t) of Boolean with
-      Ghost;
+      Ghost => True;
 
       ------------------
       -- os_task_init --

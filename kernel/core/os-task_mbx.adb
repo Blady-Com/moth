@@ -2,7 +2,8 @@ with Interfaces;   use Interfaces;
 with Interfaces.C; use Interfaces.C;
 with os.task_list;
 
-package body os.task_mbx is
+package body os.task_mbx with
+     Refined_State => (Os_Task_Mbx_State => (os_task_mbx_rw)) is
 
    type os_mbx_t_array is array (os_mbx_index_t) of os_mbx_entry_t;
 
