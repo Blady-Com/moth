@@ -3,6 +3,8 @@ package body os.task_ro with
 
    subtype os_virtual_address_t is types.uint32_t;
 
+   subtype os_size_t is types.uint32_t;
+
    type os_task_section_t is record
       virtual_address : os_virtual_address_t;
       size            : os_size_t;

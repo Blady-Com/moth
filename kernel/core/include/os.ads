@@ -67,8 +67,6 @@ is
    subtype os_status_t is types.int32_t
                            range OS_ERROR_MAX .. OS_SUCCESS;
 
-   subtype os_size_t is types.uint32_t;
-
    subtype os_priority_t is types.uint8_t;
 
    type os_mbx_msg_t is range 0 .. 2 ** OS_MBX_MSG_SZ - 1;
