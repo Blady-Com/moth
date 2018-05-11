@@ -18,7 +18,7 @@ package os.task_mbx with
    function os_mbx_is_full (task_id : os_task_id_param_t) return Boolean with
       Global => (Input => Os_Task_Mbx_State);
 
-   --  Retrieve the mbx head index of the given task.
+      --  Retrieve the mbx head index of the given task.
 
    function os_mbx_get_mbx_head
      (task_id : os_task_id_param_t) return os_mbx_index_t;
@@ -26,9 +26,11 @@ package os.task_mbx with
    --  Increment the mbx head index of the given task. No contract, it will be
    --  inlined
 
-   procedure os_mbx_inc_mbx_head (task_id : os_task_id_param_t);
+   procedure os_mbx_inc_mbx_head (task_id : os_task_id_param_t) with
+      Pre  => not os_mbx_is_empty (task_id),
+      Post => not os_mbx_is_empty (task_id);
 
-   --  Retrieve the mbx count of the given task.
+      --  Retrieve the mbx count of the given task.
 
    function os_mbx_get_mbx_count
      (task_id : os_task_id_param_t) return os_mbx_count_t;
@@ -51,7 +53,7 @@ package os.task_mbx with
       --  Decrement the mbx count of the given task.
 
    procedure os_mbx_dec_mbx_count (task_id : os_task_id_param_t) with
-      Pre  => (os_mbx_get_mbx_count (task_id) > os_mbx_count_t'First),
+      Pre  => not os_mbx_is_empty (task_id),
       Post =>
       (os_mbx_get_mbx_count (task_id) =
        os_mbx_get_mbx_count (task_id)'Old - 1);
@@ -80,12 +82,16 @@ package os.task_mbx with
 
    procedure os_mbx_clear_mbx_entry
      (task_id   : os_task_id_param_t;
-      mbx_index : os_mbx_index_t);
+      mbx_index : os_mbx_index_t) with
+      Pre  => not os_mbx_is_empty (task_id),
+      Post => not os_mbx_is_empty (task_id);
 
    procedure os_mbx_set_mbx_entry
      (task_id   : os_task_id_param_t;
       mbx_index : os_mbx_index_t;
-      mbx_entry : os_mbx_entry_t);
+      mbx_entry : os_mbx_entry_t) with
+      Pre  => not os_mbx_is_empty (task_id),
+      Post => not os_mbx_is_empty (task_id);
 
    function os_mbx_get_mbx_entry
      (task_id   : os_task_id_param_t;

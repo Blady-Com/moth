@@ -374,6 +374,7 @@ package body os with
 
          --  go through received mbx for this task
          for iterator in 1 .. os_mbx_get_mbx_count (current) loop
+            pragma Loop_Invariant (not os_mbx_is_empty (current));
 
             --  look into the mbx queue for a mbx that is waited for
             if os_mbx_is_waiting_mbx_entry (current, mbx_index) then
@@ -391,6 +392,7 @@ package body os with
                   for iterator2 in os_mbx_count_t'Succ (iterator) ..
                           os_mbx_get_mbx_count (current)
                   loop
+                     pragma Loop_Invariant (not os_mbx_is_empty (current));
                      next_mbx_index := os_mbx_index_t'Succ (mbx_index);
                      os_mbx_set_mbx_entry
                        (current,
