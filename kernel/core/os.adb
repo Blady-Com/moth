@@ -323,20 +323,12 @@ package body os with
 
          os_arch_context_create (task_iterator);
 
-         for mbx_iterator in os_mbx_index_t'Range loop
-            os_mbx_clear_mbx_entry (task_iterator, mbx_iterator);
-         end loop;
-
          os_task_mbx_init (task_iterator);
-        os_task_init (task_iterator);
+         os_task_init (task_iterator);
 
          prev_id := task_iterator;
 
          os_ghost_task_ready_init (task_iterator);
-      end loop;
-
-      for task_iterator in os_task_id_param_t'range loop
-         os_sched_add_task_to_ready_list (task_iterator);
       end loop;
 
       os_sched_schedule (task_id);

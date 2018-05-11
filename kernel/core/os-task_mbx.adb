@@ -190,6 +190,9 @@ package body os.task_mbx with
    begin
       os_task_mbx_rw (task_id).head  := 0;
       os_task_mbx_rw (task_id).count := 0;
+      for mbx_iterator in os_mbx_index_t'Range loop
+         os_mbx_clear_mbx_entry (task_id, mbx_iterator);
+      end loop;
    end os_task_mbx_init;
 
    ---------------------------------------

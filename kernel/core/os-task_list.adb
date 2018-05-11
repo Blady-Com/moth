@@ -47,6 +47,7 @@ is
       os_task_list_rw (task_id).mbx_waiting_mask := 0;
       os_task_list_rw (task_id).next             := OS_TASK_ID_NONE;
       os_task_list_rw (task_id).prev             := OS_TASK_ID_NONE;
+      os_sched_add_task_to_ready_list (task_id);
    end os_task_init;
 
    ------------------------------
