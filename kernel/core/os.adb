@@ -62,7 +62,7 @@ package body os with
                   Output => os_task_current),
       Pre => os.task_list.os_ghost_task_list_is_well_formed,
       Post => os.task_list.os_ghost_task_list_is_well_formed and then
-              os.task_list.os_ghost_task_is_ready (task_id)
+              os.task_list.os_ghost_task_is_ready (task_id) -- Q: os.adb:65:15: medium: postcondition might fail, cannot prove os.task_list.os_ghost_task_is_ready (task_id)
    is
    begin
       --  Check interrupt status
@@ -136,7 +136,7 @@ package body os with
              os.task_list.os_ghost_current_task_is_ready and then
              os_ghost_task_mbx_are_well_formed (dest_id),
       Post => os.task_list.os_ghost_task_list_is_well_formed and then
-              os.task_list.os_ghost_current_task_is_ready
+              os.task_list.os_ghost_current_task_is_ready -- Q: os.adb:139:15: medium: postcondition might fail, cannot prove os.task_list.os_ghost_current_task_is_ready
    is
       current        : constant os_task_id_param_t := os_sched_get_current_task_id;
       mbx_permission : constant os_mbx_mask_t :=
