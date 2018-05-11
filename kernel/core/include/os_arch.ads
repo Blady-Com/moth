@@ -4,6 +4,7 @@ pragma SPARK_Mode;
 
 with types;
 with os;
+with os.task_list;
 
 package os_arch is
 
@@ -36,7 +37,7 @@ package os_arch is
 
    procedure os_arch_idle
       with Global        => null,
-           Post          => os.os_ghost_task_list_is_well_formed,
+           Post          => os.task_list.os_ghost_task_list_is_well_formed,
            Import        => True,
            External_Name => "os_arch_idle",
            Convention    => C;

@@ -259,7 +259,7 @@ is
      (
    --  The list might be empty. This is legal.
    (os_sched_get_current_list_head = OS_TASK_ID_NONE and
-   --  then all element are diconnected (not in a list)
+   --  then all element are disconnected (not in a list)
        (for all task_id in os_task_id_param_t'Range =>
    -- no next
           os_task_list_rw (task_id).next = OS_TASK_ID_NONE

@@ -60,9 +60,9 @@ package body os with
       Global => (Input => os.task_ro.OS_Task_RO_State,
                   In_Out => os.task_list.OS_Task_State,
                   Output => os_task_current),
-      Pre => os_ghost_task_list_is_well_formed,
-      Post => os_ghost_task_list_is_well_formed and then
-              os_ghost_task_is_ready (task_id)
+      Pre => os.task_list.os_ghost_task_list_is_well_formed,
+      Post => os.task_list.os_ghost_task_list_is_well_formed and then
+              os.task_list.os_ghost_task_is_ready (task_id)
    is
    begin
       --  Check interrupt status
@@ -99,8 +99,7 @@ package body os with
    function os_mbx_get_posted_mask
      (task_id : os_task_id_param_t) return os_mbx_mask_t
    with
---        Global => (Input => (os_task_mbx_rw)),
-      Pre => os_ghost_task_mbx_are_well_formed (task_id)
+      Pre => os.task_mbx.os_ghost_task_mbx_are_well_formed (task_id)
    is
       mbx_mask  : os_mbx_mask_t := 0;
       mbx_index : os_mbx_index_t;
@@ -133,10 +132,10 @@ package body os with
    with
       Global => (Input  => (os_task_current, os.task_ro.OS_Task_RO_State),
                  In_Out => (os.task_list.OS_Task_State, os.task_mbx.OS_Task_Mbx_State)),
-      Pre => os_ghost_task_list_is_well_formed and then
-             os_ghost_current_task_is_ready,
-      Post => os_ghost_task_list_is_well_formed and then
-              os_ghost_current_task_is_ready
+      Pre => os.task_list.os_ghost_task_list_is_well_formed and then
+             os.task_list.os_ghost_current_task_is_ready,
+      Post => os.task_list.os_ghost_task_list_is_well_formed and then
+              os.task_list.os_ghost_current_task_is_ready
    is
       current        : constant os_task_id_param_t := os_sched_get_current_task_id;
       mbx_permission : constant os_mbx_mask_t :=
@@ -170,10 +169,10 @@ package body os with
    with
       Global => (Input  => (os_task_current, os.task_ro.OS_Task_RO_State),
                  In_Out => (os.task_list.OS_Task_State, os.task_mbx.OS_Task_Mbx_State)),
-      Pre => os_ghost_task_list_is_well_formed and then
-             os_ghost_current_task_is_ready,
-      Post => os_ghost_task_list_is_well_formed and then
-              os_ghost_current_task_is_ready
+       Pre => os.task_list.os_ghost_task_list_is_well_formed and then
+             os.task_list.os_ghost_current_task_is_ready,
+      Post => os.task_list.os_ghost_task_list_is_well_formed and then
+              os.task_list.os_ghost_current_task_is_ready
    is
       ret : os_status_t;
    begin
@@ -205,7 +204,7 @@ package body os with
 
    function os_ghost_mbx_are_well_formed return Boolean is
       (for all task_id in os_task_id_param_t'range =>
-         os_ghost_task_mbx_are_well_formed (task_id));
+         os.task_mbx.os_ghost_task_mbx_are_well_formed (task_id));
 
    -------------------------------------------------
    -- os_ghost_head_list_task_has_higher_priority --
@@ -213,9 +212,9 @@ package body os with
 
    function os_ghost_head_list_task_has_higher_priority return Boolean is
       (os_sched_get_current_list_head /= OS_TASK_ID_NONE and then
-       os_ghost_task_is_ready (os_sched_get_current_list_head) and then
+       os.task_list.os_ghost_task_is_ready (os_sched_get_current_list_head) and then
          (for some task_id in os_task_id_param_t'range =>
-            os_ghost_task_is_ready (task_id) and then
+            os.task_list.os_ghost_task_is_ready (task_id) and then
             os_get_task_priority (task_id)
                <= os_get_task_priority (os_sched_get_current_list_head)))
    with
