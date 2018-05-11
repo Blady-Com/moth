@@ -136,7 +136,8 @@ package body os with
              os.task_list.os_ghost_current_task_is_ready and then
              os_ghost_task_mbx_are_well_formed (dest_id),
       Post => os.task_list.os_ghost_task_list_is_well_formed and then
-              os.task_list.os_ghost_current_task_is_ready -- Q: os.adb:139:15: medium: postcondition might fail, cannot prove os.task_list.os_ghost_current_task_is_ready
+              os.task_list.os_ghost_current_task_is_ready and then -- Q: os.adb:139:15: medium: postcondition might fail, cannot prove os.task_list.os_ghost_current_task_is_ready
+              os_ghost_task_mbx_are_well_formed (dest_id)
    is
       current        : constant os_task_id_param_t := os_sched_get_current_task_id;
       mbx_permission : constant os_mbx_mask_t :=
@@ -171,7 +172,8 @@ package body os with
       Global => (Input  => (os_task_current, os.task_ro.OS_Task_RO_State),
                  In_Out => (os.task_list.OS_Task_State, os.task_mbx.OS_Task_Mbx_State)),
        Pre => os.task_list.os_ghost_task_list_is_well_formed and then
-             os.task_list.os_ghost_current_task_is_ready,
+             os.task_list.os_ghost_current_task_is_ready and then
+             (for all iterator in os_task_id_param_t'range => os_ghost_task_mbx_are_well_formed (iterator)),
       Post => os.task_list.os_ghost_task_list_is_well_formed and then
               os.task_list.os_ghost_current_task_is_ready
    is
@@ -180,6 +182,10 @@ package body os with
       status := OS_ERROR_DENIED;
 
       for iterator in os_task_id_param_t'range loop
+         pragma Loop_Invariant (os.task_list.os_ghost_task_list_is_well_formed and then
+             os.task_list.os_ghost_current_task_is_ready and then
+             os_ghost_task_mbx_are_well_formed (iterator));  -- Q: os.adb:187:14: medium: loop invariant might fail after first iteration, cannot prove os_ghost_task_mbx_are_well_formed (iterator)
+
          os_mbx_send_one_task (ret, iterator, mbx_msg);
 
          if ret = OS_ERROR_FIFO_FULL then
