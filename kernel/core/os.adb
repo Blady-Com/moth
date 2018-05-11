@@ -133,7 +133,8 @@ package body os with
       Global => (Input  => (os_task_current, os.task_ro.OS_Task_RO_State),
                  In_Out => (os.task_list.OS_Task_State, os.task_mbx.OS_Task_Mbx_State)),
       Pre => os.task_list.os_ghost_task_list_is_well_formed and then
-             os.task_list.os_ghost_current_task_is_ready,
+             os.task_list.os_ghost_current_task_is_ready and then
+             os_ghost_task_mbx_are_well_formed (dest_id),
       Post => os.task_list.os_ghost_task_list_is_well_formed and then
               os.task_list.os_ghost_current_task_is_ready
    is
