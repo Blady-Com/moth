@@ -1,5 +1,10 @@
-package os.task_ro with
+with types;
+with os_task_list; use os_task_list;
+
+package os_task_ro with
      Abstract_State => Os_Task_Ro_State is
+
+   subtype os_priority_t is types.uint8_t;
 
    --  Get the mbx permission for a given task
 
@@ -13,4 +18,4 @@ package os.task_ro with
      (task_id : os_task_id_param_t) return os_priority_t with
       Global => (Input => Os_Task_Ro_State);
 
-end os.task_ro;
+end os_task_ro;

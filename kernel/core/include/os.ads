@@ -24,16 +24,12 @@ pragma Ada_2012;
 pragma Style_Checks (Off);
 
 with types;
-with OpenConf;
+with os_task_list; use os_task_list;
+with os_task_mbx; use os_task_mbx;
 
 package os with
    SPARK_mode
 is
-
-   OS_INTERRUPT_TASK_ID : constant := 0;
-
-   OS_TASK_ID_NONE     : constant := -1;
-   OS_TASK_ID_ALL      : constant := -2;
 
    OS_MBX_MASK_ALL     : constant := 16#ffffffff#;
 
@@ -45,58 +41,8 @@ is
    OS_ERROR_PARAM      : constant := -5;
    OS_ERROR_MAX        : constant := OS_ERROR_PARAM;
 
-   OS_MAX_TASK_CNT     : constant := OpenConf.CONFIG_MAX_TASK_COUNT;
-   OS_MAX_TASK_ID      : constant := OS_MAX_TASK_CNT - 1;
-   OS_MIN_TASK_ID      : constant := 0;
-   OS_MAX_MBX_CNT      : constant := OpenConf.CONFIG_TASK_MBX_COUNT;
-   OS_MAX_MBX_ID       : constant := OS_MAX_MBX_CNT - 1;
-
-   OS_MBX_MSG_SZ       : constant := OpenConf.CONFIG_MBX_SIZE;
-
-   subtype os_mbx_mask_t is types.uint32_t;
-
-   subtype os_task_dest_id_t is types.int8_t
-                           range OS_TASK_ID_ALL .. OS_MAX_TASK_ID;
-
-   subtype os_task_id_t is os_task_dest_id_t
-                           range OS_TASK_ID_NONE .. OS_MAX_TASK_ID;
-
-   subtype os_task_id_param_t is os_task_id_t
-                           range OS_MIN_TASK_ID .. OS_MAX_TASK_ID;
-
    subtype os_status_t is types.int32_t
                            range OS_ERROR_MAX .. OS_SUCCESS;
-
-   subtype os_priority_t is types.uint8_t;
-
-   type os_mbx_msg_t is range 0 .. 2 ** OS_MBX_MSG_SZ - 1;
-   for os_mbx_msg_t'Size use OS_MBX_MSG_SZ;
-
-   type os_mbx_entry_t is record
-      sender_id        : os_task_id_t;
-      msg              : os_mbx_msg_t;
-   end record;
-   pragma Convention (C_Pass_By_Copy, os_mbx_entry_t);
-
-   function os_ghost_task_mbx_are_well_formed (task_id : os_task_id_param_t) return Boolean
-   with
-      Ghost => true;
-
-   function os_ghost_mbx_are_well_formed return Boolean
-   with
-      Ghost => true;
-
-   function os_ghost_task_list_is_well_formed return Boolean
-   with
-      Ghost => true;
-
-   function os_ghost_task_is_ready (task_id : os_task_id_param_t) return Boolean
-   with
-      Ghost => true;
-
-   function os_ghost_current_task_is_ready return Boolean
-   with
-      Ghost => true;
 
    function os_sched_get_current_task_id return os_task_id_param_t;
    pragma Export (C, os_sched_get_current_task_id, "os_sched_get_current_task_id");

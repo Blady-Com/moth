@@ -1,4 +1,4 @@
-package body os.task_ro with
+package body os_task_ro with
      Refined_State => (Os_Task_Ro_State => (os_task_ro)) is
 
    subtype os_virtual_address_t is types.uint32_t;
@@ -39,4 +39,4 @@ package body os.task_ro with
      (task_id : os_task_id_param_t) return os_priority_t is
      (os_task_ro (task_id).priority);
 
-end os.task_ro;
+end os_task_ro;

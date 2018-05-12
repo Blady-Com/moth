@@ -1,8 +1,7 @@
 with Interfaces;   use Interfaces;
 with Interfaces.C; use Interfaces.C;
-with os.task_list;
 
-package body os.task_mbx with
+package body os_task_mbx with
      Refined_State => (Os_Task_Mbx_State => (os_task_mbx_rw)) is
 
    type os_mbx_t_array is array (os_mbx_index_t) of os_mbx_entry_t;
@@ -175,7 +174,7 @@ package body os.task_mbx with
    function os_mbx_is_waiting_mbx_entry
      (task_id   : os_task_id_param_t;
       mbx_index : os_mbx_index_t) return Boolean is
-     ((os.task_list.os_mbx_get_waiting_mask (task_id) and
+     ((os_mbx_get_waiting_mask (task_id) and
        os_mbx_mask_t
          (Shift_Left
             (Unsigned_32'(1),
@@ -229,4 +228,4 @@ package body os.task_mbx with
            os_task_mbx_rw (task_id).mbx_array (index).sender_id =
            OS_TASK_ID_NONE));
 
-end os.task_mbx;
+end os_task_mbx;

@@ -1,9 +1,27 @@
 with Interfaces.C;
-package os.task_mbx with
+with types;
+with OpenConf;
+with os_task_list; use os_task_list;
+
+package os_task_mbx with
      Abstract_State => Os_Task_Mbx_State is
 
    use type Interfaces.C.signed_char;
    use type Interfaces.C.unsigned_char;
+
+   OS_MAX_MBX_CNT : constant := OpenConf.CONFIG_TASK_MBX_COUNT;
+   OS_MAX_MBX_ID  : constant := OS_MAX_MBX_CNT - 1;
+
+   OS_MBX_MSG_SZ : constant := OpenConf.CONFIG_MBX_SIZE;
+
+   type os_mbx_msg_t is range 0 .. 2**OS_MBX_MSG_SZ - 1;
+   for os_mbx_msg_t'Size use OS_MBX_MSG_SZ;
+
+   type os_mbx_entry_t is record
+      sender_id : os_task_id_t;
+      msg       : os_mbx_msg_t;
+   end record;
+   pragma Convention (C_Pass_By_Copy, os_mbx_entry_t);
 
    type os_mbx_index_t is mod OS_MAX_MBX_ID;
 
@@ -120,4 +138,4 @@ package os.task_mbx with
      (task_id : os_task_id_param_t) return Boolean with
       Ghost => True;
 
-end os.task_mbx;
+end os_task_mbx;

@@ -1,7 +1,8 @@
 with Interfaces.C;
-with os.task_ro; use os.task_ro;
+with os_task_ro; use os_task_ro;
+with os_task_current;
 
-package body os.task_list with
+package body os_task_list with
      Refined_State =>
      (Os_Task_State =>
         (os_task_list_rw, os_task_ready_list_head, os_ghost_task_ready))
@@ -72,7 +73,7 @@ is
    ------------------------------------
 
    function os_ghost_current_task_is_ready return Boolean is
-     (os_ghost_task_is_ready (os_sched_get_current_task_id));
+     (os_ghost_task_is_ready (os_task_current.os_sched_get_current_task_id));
 
    ------------------------------------
    -- os_sched_get_current_list_head --
@@ -314,4 +315,4 @@ is
                os_get_task_priority (os_task_list_rw (task_id).next) <=
                os_get_task_priority (task_id)))));
 
-end os.task_list;
+end os_task_list;

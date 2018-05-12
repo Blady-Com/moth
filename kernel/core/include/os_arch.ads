@@ -3,8 +3,7 @@ pragma Style_Checks (Off);
 pragma SPARK_Mode;
 
 with types;
-with os;
-with os.task_list;
+with os_task_list; use os_task_list;
 
 package os_arch is
 
@@ -37,21 +36,21 @@ package os_arch is
 
    procedure os_arch_idle
       with Global        => null,
-           Post          => os.task_list.os_ghost_task_list_is_well_formed,
+           Post          => os_task_list.os_ghost_task_list_is_well_formed,
            Import        => True,
            External_Name => "os_arch_idle",
            Convention    => C;
 
-   procedure os_arch_context_create (task_id : os.os_task_id_param_t)
+   procedure os_arch_context_create (task_id : os_task_id_param_t)
       with Global => null;
    pragma Import (C, os_arch_context_create, "os_arch_context_create");
 
-   procedure os_arch_context_switch (prev_id : os.os_task_id_param_t;
-                                     next_id : os.os_task_id_param_t)
+   procedure os_arch_context_switch (prev_id : os_task_id_param_t;
+                                     next_id : os_task_id_param_t)
       with Global => null;
    pragma Import (C, os_arch_context_switch, "os_arch_context_switch");
 
-   procedure os_arch_context_set (task_id : os.os_task_id_param_t)
+   procedure os_arch_context_set (task_id : os_task_id_param_t)
       with Global => null;
    pragma Import (C, os_arch_context_set, "os_arch_context_set");
 
@@ -59,8 +58,8 @@ package os_arch is
       with Global => null;
    pragma Import (C, os_arch_space_init, "os_arch_space_init");
 
-   procedure os_arch_space_switch (old_context_id : os.os_task_id_param_t;
-                                   new_context_id : os.os_task_id_param_t)
+   procedure os_arch_space_switch (old_context_id : os_task_id_param_t;
+                                   new_context_id : os_task_id_param_t)
       with Global => null;
    pragma Import (C, os_arch_space_switch, "os_arch_space_switch");
 
