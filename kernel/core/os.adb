@@ -210,14 +210,17 @@ package body os with
       tmp_mask : os_mbx_mask_t;
    begin
       task_id := os_sched_get_current_task_id;
+      pragma assert (os_ghost_task_mbx_are_well_formed (task_id)); -- Q: os.adb:213:22: medium: assertion might fail, cannot prove os_ghost_task_mbx_are_well_formed (task_id), how to prove it since task_id is current task?
 
       tmp_mask := waiting_mask and os_mbx_get_mbx_permission (task_id);
 
       --  We remove the current task from the ready list.
       os_sched_remove_task_from_ready_list (task_id);
+      pragma assert (os_ghost_task_list_is_well_formed);
 
       if tmp_mask /= 0 then
          os_mbx_set_waiting_mask (task_id, tmp_mask);
+      pragma assert (os_ghost_task_list_is_well_formed); -- Q: os.adb:223:22: medium: assertion might fail, cannot prove (os_ghost_task_list_is_well_formed), how to neutralize action of os_mbx_set_waiting_mask?
 
          tmp_mask := tmp_mask and os_mbx_get_posted_mask (task_id);
 
@@ -298,7 +301,7 @@ package body os with
          os_ghost_task_ready_init (task_iterator);
       end loop;
 
-      os_sched_schedule (task_id);
+      os_sched_schedule (task_id); -- Q: os.adb:301:07: medium: precondition might fail, cannot prove os_ghost_task_list_is_well_formed for the first time after init
 
       os_arch_context_set (task_id);
 
