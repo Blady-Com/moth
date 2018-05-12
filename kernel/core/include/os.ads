@@ -92,7 +92,8 @@ is
                           mbx_msg :     os_mbx_msg_t)
    with
       Pre => os_ghost_task_list_is_well_formed and then
-             os_ghost_current_task_is_ready,
+             os_ghost_current_task_is_ready and then
+             (dest_id in os_task_id_param_t and then os_ghost_task_mbx_are_well_formed (dest_id)),
       Post => os_ghost_task_list_is_well_formed and then
               os_ghost_current_task_is_ready;
    pragma Export (C, os_mbx_send, "os_mbx_send");
