@@ -1,4 +1,5 @@
 package body os_task_ro with
+     Spark_Mode    => On,
      Refined_State => (Os_Task_Ro_State => (os_task_ro)) is
 
    subtype os_virtual_address_t is types.uint32_t;

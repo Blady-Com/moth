@@ -1,6 +1,7 @@
 with types; use types;
 
 package os_task_ro with
+     Spark_Mode     => On,
      Abstract_State => Os_Task_Ro_State is
 
    --  Get the mbx permission for a given task

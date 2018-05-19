@@ -1,4 +1,5 @@
 package body os_task_current with
+     Spark_Mode    => On,
      Refined_State => (Os_Task_Current_State => (os_task_current)) is
 
    ---------------------
