@@ -1,29 +1,8 @@
-with types;
-with OpenConf;
+with types; use types;
 
 package os_task_list with
      Spark_Mode     => On,
      Abstract_State => Os_Task_State is
-
-   OS_INTERRUPT_TASK_ID : constant := 0;
-
-   OS_TASK_ID_NONE : constant := -1;
-   OS_TASK_ID_ALL  : constant := -2;
-
-   OS_MAX_TASK_CNT : constant := OpenConf.CONFIG_MAX_TASK_COUNT;
-   OS_MAX_TASK_ID  : constant := OS_MAX_TASK_CNT - 1;
-   OS_MIN_TASK_ID  : constant := 0;
-
-   subtype os_mbx_mask_t is types.uint32_t;
-
-   subtype os_task_dest_id_t is
-     types.int8_t range OS_TASK_ID_ALL .. OS_MAX_TASK_ID;
-
-   subtype os_task_id_t is
-     os_task_dest_id_t range OS_TASK_ID_NONE .. OS_MAX_TASK_ID;
-
-   subtype os_task_id_param_t is
-     os_task_id_t range OS_MIN_TASK_ID .. OS_MAX_TASK_ID;
 
    procedure os_task_init (task_id : os_task_id_t);
 

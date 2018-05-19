@@ -1,4 +1,4 @@
-with os_task_list; use os_task_list;
+with types; use types;
 
 package os_task_current with
      Abstract_State => Os_Task_Current_State is

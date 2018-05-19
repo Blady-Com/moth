@@ -1,7 +1,6 @@
 with Interfaces.C;
-with types;
+with types; use types;
 with OpenConf;
-with os_task_list; use os_task_list;
 
 package os_task_mbx with
      Spark_Mode     => On,

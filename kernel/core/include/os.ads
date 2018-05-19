@@ -20,16 +20,12 @@
 --  @brief
 --
 
-pragma Ada_2012;
-pragma Style_Checks (Off);
-
-with types;
+with types; use types;
 with os_task_list; use os_task_list;
 with os_task_mbx; use os_task_mbx;
 
 package os with
-   SPARK_mode
-is
+   SPARK_mode => On is
 
    OS_MBX_MASK_ALL     : constant := 16#ffffffff#;
 

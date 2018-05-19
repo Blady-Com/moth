@@ -1,5 +1,6 @@
 with Interfaces;   use Interfaces;
 with Interfaces.C; use Interfaces.C;
+with os_task_list;
 
 package body os_task_mbx with
      Spark_Mode    => On,
@@ -175,7 +176,7 @@ package body os_task_mbx with
    function os_mbx_is_waiting_mbx_entry
      (task_id   : os_task_id_param_t;
       mbx_index : os_mbx_index_t) return Boolean is
-     ((os_mbx_get_waiting_mask (task_id) and
+     ((os_task_list.os_mbx_get_waiting_mask (task_id) and
        os_mbx_mask_t
          (Shift_Left
             (Unsigned_32'(1),

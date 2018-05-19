@@ -1,11 +1,9 @@
-pragma Ada_2012;
-pragma Style_Checks (Off);
-pragma SPARK_Mode;
-
-with types;
+with types; use types;
 with os_task_list; use os_task_list;
 
-package os_arch is
+package os_arch
+with SPARK_Mode => On
+is
 
   --
   --  Copyright (c) 2017 Jean-Christophe Dubois

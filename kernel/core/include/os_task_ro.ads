@@ -1,10 +1,7 @@
-with types;
-with os_task_list; use os_task_list;
+with types; use types;
 
 package os_task_ro with
      Abstract_State => Os_Task_Ro_State is
-
-   subtype os_priority_t is types.uint8_t;
 
    --  Get the mbx permission for a given task
 

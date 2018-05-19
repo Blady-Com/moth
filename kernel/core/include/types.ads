@@ -1,11 +1,9 @@
-pragma Ada_2012;
-pragma Style_Checks (Off);
-pragma SPARK_Mode;
-
 with Interfaces.C; use Interfaces.C;
 with Interfaces.C.Extensions;
+with OpenConf;
 
-package types is
+package types with
+     Spark_Mode => On is
 
   --
   --  Copyright (c) 2017 Jean-Christophe Dubois
@@ -49,5 +47,29 @@ package types is
    subtype size_t is unsigned;
 
    subtype intptr_t is unsigned_long;
+
+   -- Global types
+
+   subtype os_priority_t is types.uint8_t;
+
+   subtype os_mbx_mask_t is types.uint32_t;
+
+   OS_INTERRUPT_TASK_ID : constant := 0;
+
+   OS_TASK_ID_NONE : constant := -1;
+   OS_TASK_ID_ALL  : constant := -2;
+
+   OS_MAX_TASK_CNT : constant := OpenConf.CONFIG_MAX_TASK_COUNT;
+   OS_MAX_TASK_ID  : constant := OS_MAX_TASK_CNT - 1;
+   OS_MIN_TASK_ID  : constant := 0;
+
+   subtype os_task_dest_id_t is
+     types.int8_t range OS_TASK_ID_ALL .. OS_MAX_TASK_ID;
+
+   subtype os_task_id_t is
+     os_task_dest_id_t range OS_TASK_ID_NONE .. OS_MAX_TASK_ID;
+
+   subtype os_task_id_param_t is
+     os_task_id_t range OS_MIN_TASK_ID .. OS_MAX_TASK_ID;
 
 end types;
