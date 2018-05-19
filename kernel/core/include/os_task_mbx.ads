@@ -77,6 +77,16 @@ package os_task_mbx with
       (os_mbx_get_mbx_count (task_id) =
        os_mbx_get_mbx_count (task_id)'Old - 1);
 
+      --  Remove mbx of the given task.
+
+   procedure os_mbx_remove_mbx_entry
+     (task_id   : os_task_id_param_t;
+      mbx_index : os_mbx_index_t) with
+      Pre  => not os_mbx_is_empty (task_id),
+      Post =>
+      (os_mbx_get_mbx_count (task_id) =
+       os_mbx_get_mbx_count (task_id)'Old - 1);
+
       --  Retrieve the tail mbx sender of the given task.
    function os_mbx_get_tail_sender
      (task_id : os_task_id_param_t) return os_task_id_t;
@@ -101,9 +111,7 @@ package os_task_mbx with
 
    procedure os_mbx_clear_mbx_entry
      (task_id   : os_task_id_param_t;
-      mbx_index : os_mbx_index_t) with
-      Pre  => not os_mbx_is_empty (task_id),
-      Post => not os_mbx_is_empty (task_id);
+      mbx_index : os_mbx_index_t);
 
    procedure os_mbx_set_mbx_entry
      (task_id   : os_task_id_param_t;

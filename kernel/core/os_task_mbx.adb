@@ -100,6 +100,22 @@ package body os_task_mbx with
         os_mbx_count_t'Pred (os_mbx_get_mbx_count (task_id));
    end os_mbx_dec_mbx_count;
 
+   -----------------------
+   -- os_mbx_remove_mbx --
+   -----------------------
+
+   procedure os_mbx_remove_mbx_entry
+     (task_id   : os_task_id_param_t;
+      mbx_index : os_mbx_index_t)
+   is
+   begin
+      os_task_mbx_rw (task_id).mbx_array (mbx_index).sender_id :=
+        OS_TASK_ID_NONE;
+      os_task_mbx_rw (task_id).mbx_array (mbx_index).msg := 0;
+      os_task_mbx_rw (task_id).count                     :=
+        os_mbx_count_t'Pred (os_mbx_get_mbx_count (task_id));
+   end os_mbx_remove_mbx_entry;
+
    ------------------------
    -- os_mbx_add_message --
    ------------------------

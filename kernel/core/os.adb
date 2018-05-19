@@ -366,11 +366,8 @@ package body os with
                   end loop;
                end if;
 
-               --  remove the mbx from the mbx queue (by clearing the entry).
-               os_mbx_clear_mbx_entry (current, mbx_index);
-
-               --  decrement the mbx count
-               os_mbx_dec_mbx_count (current);
+               --  remove the mbx from the mbx queue and decrement the mbx count
+               os_mbx_remove_mbx_entry (current, mbx_index);
 
                --  We found a matching mbx
                status := OS_SUCCESS;
