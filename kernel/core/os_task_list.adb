@@ -44,7 +44,7 @@ is
       -- os_task_init --
       ------------------
 
-   procedure os_task_init (task_id : os_task_id_t) is
+   procedure os_task_init (task_id : os_task_id_param_t) is
    begin
       os_task_list_rw (task_id).mbx_waiting_mask := 0;
       os_task_list_rw (task_id).next             := OS_TASK_ID_NONE;
@@ -56,7 +56,7 @@ is
    -- os_ghost_task_ready_init --
    ------------------------------
 
-   procedure os_ghost_task_ready_init (task_id : os_task_id_t) is
+   procedure os_ghost_task_ready_init (task_id : os_task_id_param_t) is
    begin
       os_ghost_task_ready (task_id) := False;
    end os_ghost_task_ready_init;

@@ -4,7 +4,7 @@ package os_task_list with
      Spark_Mode     => On,
      Abstract_State => Os_Task_State is
 
-   procedure os_task_init (task_id : os_task_id_t);
+   procedure os_task_init (task_id : os_task_id_param_t);
 
    function os_sched_get_current_list_head return os_task_id_t;
 
@@ -39,7 +39,7 @@ package os_task_list with
    function os_ghost_task_list_is_well_formed return Boolean with
       Ghost => True;
 
-   procedure os_ghost_task_ready_init (task_id : os_task_id_t) with
+   procedure os_ghost_task_ready_init (task_id : os_task_id_param_t) with
       Ghost => True;
 
    function os_ghost_task_is_ready
