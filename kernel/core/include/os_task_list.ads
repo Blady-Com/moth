@@ -37,8 +37,7 @@ package os_task_list with
       Ghost => True;
 
    function os_ghost_task_list_is_well_formed return Boolean with
-      Ghost  => True,
-      Global => (Input => Os_Task_State);
+      Ghost => True;
 
    procedure os_ghost_task_ready_init (task_id : os_task_id_t) with
       Ghost => True;
