@@ -118,7 +118,7 @@ package os_task_mbx with
 
    function os_mbx_get_mbx_entry_sender
      (task_id   : os_task_id_param_t;
-      mbx_index : os_mbx_index_t) return os_task_id_param_t;
+      mbx_index : os_mbx_index_t) return os_task_id_t;
 
    function os_mbx_is_waiting_mbx_entry
      (task_id   : os_task_id_param_t;

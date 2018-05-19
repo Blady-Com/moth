@@ -165,9 +165,8 @@ package body os_task_mbx with
 
    function os_mbx_get_mbx_entry_sender
      (task_id   : os_task_id_param_t;
-      mbx_index : os_mbx_index_t) return os_task_id_param_t is
-     (os_task_id_param_t
-        (os_task_mbx_rw (task_id).mbx_array (mbx_index).sender_id));
+      mbx_index : os_mbx_index_t) return os_task_id_t is
+     (os_task_mbx_rw (task_id).mbx_array (mbx_index).sender_id);
 
    ---------------------------------
    -- os_mbx_is_waiting_mbx_entry --
@@ -176,12 +175,14 @@ package body os_task_mbx with
    function os_mbx_is_waiting_mbx_entry
      (task_id   : os_task_id_param_t;
       mbx_index : os_mbx_index_t) return Boolean is
-     ((os_task_list.os_mbx_get_waiting_mask (task_id) and
-       os_mbx_mask_t
-         (Shift_Left
-            (Unsigned_32'(1),
-             Natural (os_mbx_get_mbx_entry_sender (task_id, mbx_index))))) /=
-      0);
+     (os_mbx_get_mbx_entry_sender (task_id, mbx_index) in os_task_id_param_t
+      and then
+        (os_task_list.os_mbx_get_waiting_mask (task_id) and
+         os_mbx_mask_t
+           (Shift_Left
+              (Unsigned_32'(1),
+               Natural (os_mbx_get_mbx_entry_sender (task_id, mbx_index))))) /=
+        0);
 
    ----------------------
    -- os_task_mbx_init --

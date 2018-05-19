@@ -68,11 +68,13 @@ package body os with
          mbx_index := os_mbx_get_mbx_head (task_id);
          for iterator in 1 .. os_mbx_get_mbx_count (task_id)
          loop
-             mbx_mask :=
-              mbx_mask or
-              os_mbx_mask_t (Shift_Left
-                (Unsigned_32'(1),
-                 Natural (os_mbx_get_mbx_entry_sender (task_id, mbx_index))));
+            if os_mbx_get_mbx_entry_sender (task_id, mbx_index) in os_task_id_param_t then
+               mbx_mask :=
+                 mbx_mask or
+                 os_mbx_mask_t (Shift_Left
+                                (Unsigned_32'(1),
+                                   Natural (os_mbx_get_mbx_entry_sender (task_id, mbx_index))));
+            end if;
             mbx_index := os_mbx_index_t'Succ(mbx_index);
          end loop;
       end if;
