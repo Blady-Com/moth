@@ -2,6 +2,7 @@ with Interfaces;   use Interfaces;
 with Interfaces.C; use Interfaces.C;
 
 package body os_task_mbx with
+     Spark_Mode    => On,
      Refined_State => (Os_Task_Mbx_State => (os_task_mbx_rw)) is
 
    type os_mbx_t_array is array (os_mbx_index_t) of os_mbx_entry_t;

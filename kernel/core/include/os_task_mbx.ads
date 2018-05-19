@@ -4,6 +4,7 @@ with OpenConf;
 with os_task_list; use os_task_list;
 
 package os_task_mbx with
+     Spark_Mode     => On,
      Abstract_State => Os_Task_Mbx_State is
 
    use type Interfaces.C.signed_char;

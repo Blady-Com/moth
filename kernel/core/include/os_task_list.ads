@@ -2,6 +2,7 @@ with types;
 with OpenConf;
 
 package os_task_list with
+     Spark_Mode     => On,
      Abstract_State => Os_Task_State is
 
    OS_INTERRUPT_TASK_ID : constant := 0;

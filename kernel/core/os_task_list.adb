@@ -3,6 +3,7 @@ with os_task_ro; use os_task_ro;
 with os_task_current;
 
 package body os_task_list with
+     Spark_Mode    => On,
      Refined_State =>
      (Os_Task_State =>
         (os_task_list_rw, os_task_ready_list_head, os_ghost_task_ready))
