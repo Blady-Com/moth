@@ -18,7 +18,8 @@ package body os with
    procedure os_sched_schedule (task_id : out os_task_id_param_t)
    with
       Global => (Input => os_task_ro.OS_Task_RO_State,
-                 In_Out => (os_task_list.OS_Task_State, os_task_current.OS_Task_Current_State)),
+                 In_Out => os_task_list.OS_Task_State,
+                 Output => os_task_current.Os_Task_Current_State),
       Pre => os_task_list.os_ghost_task_list_is_well_formed,
       Post => os_task_list.os_ghost_task_list_is_well_formed and then
               os_task_list.os_ghost_task_is_ready (task_id) -- Q: os.adb:65:15: medium: postcondition might fail, cannot prove os_task_list.os_ghost_task_is_ready (task_id)
