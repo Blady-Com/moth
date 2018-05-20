@@ -65,7 +65,8 @@ package os_task_mbx with
    procedure os_mbx_inc_mbx_count (task_id : os_task_id_param_t) with
       Pre  => (not os_mbx_is_full (task_id)),
       Post =>
-      (os_mbx_get_mbx_count (task_id) =
+      (not os_mbx_is_empty (task_id) and
+       os_mbx_get_mbx_count (task_id) =
        os_mbx_get_mbx_count (task_id)'Old + 1);
 
       --  Decrement the mbx count of the given task.
