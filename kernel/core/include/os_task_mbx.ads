@@ -34,8 +34,7 @@ package os_task_mbx with
    --  Check if the mbx fifo of a given task is full.
 
    function os_mbx_is_full (task_id : os_task_id_param_t) return Boolean with
-      Global => (Input => Os_Task_Mbx_State),
-      Post   => os_ghost_task_mbx_are_well_formed (task_id);
+      Global => (Input => Os_Task_Mbx_State);
 
       --  Retrieve the mbx head index of the given task.
 
