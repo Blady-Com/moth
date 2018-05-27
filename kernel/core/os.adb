@@ -173,9 +173,7 @@ package body os with
 
    function os_ghost_mbx_are_well_formed return Boolean is
       (for all task_id in os_task_id_param_t'range =>
-          os_task_mbx.os_ghost_task_mbx_are_well_formed (task_id))
-   with
-      Ghost => true;
+          os_task_mbx.os_ghost_task_mbx_are_well_formed (task_id));
 
    -------------------------------------------------
    -- os_ghost_head_list_task_has_higher_priority --
@@ -213,7 +211,7 @@ package body os with
       tmp_mask : os_mbx_mask_t;
    begin
       task_id := os_sched_get_current_task_id;
-      pragma assert (os_ghost_task_mbx_are_well_formed (task_id)); -- Q: os.adb:213:22: medium: assertion might fail, cannot prove os_ghost_task_mbx_are_well_formed (task_id), how to prove it since task_id is current task?
+      pragma assert (os_ghost_task_mbx_are_well_formed (task_id));
 
       tmp_mask := waiting_mask and os_mbx_get_mbx_permission (task_id);
 
