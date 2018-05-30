@@ -1,4 +1,3 @@
-with Interfaces.C;
 with os_task_ro; use os_task_ro;
 with os_task_current;
 
@@ -8,9 +7,6 @@ package body os_task_list with
      (Os_Task_State =>
         (os_task_list_rw, os_task_ready_list_head, os_ghost_task_ready))
 is
-
-   use type Interfaces.C.signed_char;
-   use type Interfaces.C.unsigned_char;
 
    type os_task_rw_t is record
       next             : os_task_id_t;

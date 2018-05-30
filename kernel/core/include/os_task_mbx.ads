@@ -1,13 +1,9 @@
-with Interfaces.C;
 with types; use types;
 with OpenConf;
 
 package os_task_mbx with
      Spark_Mode     => On,
      Abstract_State => Os_Task_Mbx_State is
-
-   use type Interfaces.C.signed_char;
-   use type Interfaces.C.unsigned_char;
 
    OS_MAX_MBX_CNT : constant := OpenConf.CONFIG_TASK_MBX_COUNT;
    OS_MBX_MSG_SZ  : constant := OpenConf.CONFIG_MBX_SIZE;

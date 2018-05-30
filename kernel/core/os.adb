@@ -1,5 +1,4 @@
 with Interfaces;   use Interfaces;
-with Interfaces.C; use Interfaces.C;
 with os_arch;      use os_arch;
 with os_task_ro;   use os_task_ro;
 with os_task_current; use os_task_current;

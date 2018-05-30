@@ -1,5 +1,4 @@
-with Interfaces;   use Interfaces;
-with Interfaces.C; use Interfaces.C;
+with Interfaces; use Interfaces;
 with os_task_list;
 
 package body os_task_mbx with

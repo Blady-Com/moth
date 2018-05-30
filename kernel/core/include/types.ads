@@ -29,18 +29,29 @@ package types with
   --
 
    subtype uint8_t is unsigned_char;
+   function "=" (R, L : uint8_t) return Boolean renames Interfaces.C."=";
+   function ">" (R, L : uint8_t) return Boolean renames Interfaces.C.">";
+   function "<" (R, L : uint8_t) return Boolean renames Interfaces.C."<";
+   function "<=" (R, L : uint8_t) return Boolean renames Interfaces.C."<=";
+   function "+" (R, L : uint8_t) return uint8_t renames Interfaces.C."+";
+   function "-" (R, L : uint8_t) return uint8_t renames Interfaces.C."-";
 
    subtype uint16_t is unsigned_short;
 
    subtype uint32_t is unsigned;
+   function "=" (R, L : uint32_t) return Boolean renames Interfaces.C."=";
+   function "and" (R, L : uint32_t) return uint32_t renames Interfaces.C."and";
+   function "or" (R, L : uint32_t) return uint32_t renames Interfaces.C."or";
 
    subtype uint64_t is Extensions.unsigned_long_long;
 
    subtype int8_t is signed_char;
+   function "=" (R, L : int8_t) return Boolean renames Interfaces.C."=";
 
    subtype int16_t is short;
 
    subtype int32_t is int;
+   function "=" (R, L : int32_t) return Boolean renames Interfaces.C."=";
 
    subtype int64_t is Long_Long_Integer;
 
