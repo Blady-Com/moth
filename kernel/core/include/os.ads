@@ -40,12 +40,12 @@ package os with
    subtype os_status_t is types.int32_t
                            range OS_ERROR_MAX .. OS_SUCCESS;
 
-   function os_sched_get_current_task_id return os_task_id_param_t;
-   pragma Export (C, os_sched_get_current_task_id, "os_sched_get_current_task_id");
-
    function os_ghost_mbx_are_well_formed return Boolean
    with
       Ghost => true;
+
+   function os_sched_get_current_task_id return os_task_id_param_t;
+   pragma Export (C, os_sched_get_current_task_id, "os_sched_get_current_task_id");
 
    procedure os_sched_wait (task_id      : out os_task_id_param_t;
                             waiting_mask :     os_mbx_mask_t)

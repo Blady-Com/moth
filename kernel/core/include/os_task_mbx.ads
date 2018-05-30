@@ -10,7 +10,7 @@ package os_task_mbx with
    use type Interfaces.C.unsigned_char;
 
    OS_MAX_MBX_CNT : constant := OpenConf.CONFIG_TASK_MBX_COUNT;
-   OS_MBX_MSG_SZ : constant := OpenConf.CONFIG_MBX_SIZE;
+   OS_MBX_MSG_SZ  : constant := OpenConf.CONFIG_MBX_SIZE;
 
    type os_mbx_msg_t is range 0 .. 2**OS_MBX_MSG_SZ - 1;
    for os_mbx_msg_t'Size use OS_MBX_MSG_SZ;
@@ -39,8 +39,7 @@ package os_task_mbx with
    function os_mbx_get_mbx_head
      (task_id : os_task_id_param_t) return os_mbx_index_t;
 
-   --  Increment the mbx head index of the given task. No contract, it will be
-   --  inlined
+   --  Increment the mbx head index of the given task.
 
    procedure os_mbx_inc_mbx_head (task_id : os_task_id_param_t) with
       Pre  => not os_mbx_is_empty (task_id),
@@ -65,7 +64,7 @@ package os_task_mbx with
       Post =>
       (not os_mbx_is_empty (task_id) and
        os_mbx_get_mbx_count (task_id) =
-       os_mbx_get_mbx_count (task_id)'Old + 1);
+         os_mbx_get_mbx_count (task_id)'Old + 1);
 
       --  Decrement the mbx count of the given task.
 

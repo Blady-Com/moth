@@ -12,7 +12,6 @@ package body os_task_current with
    ----------------------------------
    -- os_sched_set_current_task_id --
    ----------------------------------
-   --  No contract, it will be inlined
 
    procedure os_sched_set_current_task_id (task_id : os_task_id_param_t) is
    begin

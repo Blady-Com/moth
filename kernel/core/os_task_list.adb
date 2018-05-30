@@ -227,6 +227,7 @@ is
    ------------------------------
    -- os_ghost_not_next_twice --
    ------------------------------
+   --  A task_id should not be twice in next attribute
 
    function os_ghost_not_next_twice
      (task_id : os_task_id_t) return Boolean is
@@ -241,6 +242,7 @@ is
       ------------------------------
       -- os_ghost_not_prev_twice --
       ------------------------------
+      --  A task_id should not be twice in prev attribute
 
    function os_ghost_not_prev_twice
      (task_id : os_task_id_t) return Boolean is

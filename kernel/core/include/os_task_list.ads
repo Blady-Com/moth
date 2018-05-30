@@ -30,8 +30,16 @@ package os_task_list with
      (task_id : os_task_id_param_t;
       mask    : os_mbx_mask_t);
 
+   --  There should be at leat one task that has no next. The last element of
+   --  the list has no next. If there is no first element then all no element
+   --  has any next
+
    function os_ghost_at_least_one_terminating_next return Boolean with
       Ghost => True;
+
+      --  There should be at leat one task that has no prev. The first element
+      --  of the list has no prev. If there is no first element then all no
+      --  element has any prev
 
    function os_ghost_at_least_one_terminating_prev return Boolean with
       Ghost => True;
