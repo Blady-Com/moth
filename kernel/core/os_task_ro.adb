@@ -1,6 +1,7 @@
 package body os_task_ro with
-     Spark_Mode    => On,
-     Refined_State => (Os_Task_Ro_State => (os_task_ro)) is
+   Spark_Mode    => On,
+   Refined_State => (Os_Task_Ro_State => (os_task_ro))
+ is
 
    subtype os_virtual_address_t is types.uint32_t;
 
@@ -28,16 +29,12 @@ package body os_task_ro with
    -- os_mbx_get_mbx_permission --
    -------------------------------
 
-   function os_mbx_get_mbx_permission
-     (task_id : os_task_id_param_t) return os_mbx_mask_t is
-     (os_task_ro (task_id).mbx_permission);
+   function os_mbx_get_mbx_permission (task_id : os_task_id_param_t) return os_mbx_mask_t is (os_task_ro (task_id).mbx_permission);
 
    --------------------------
    -- os_get_task_priority --
    --------------------------
 
-   function os_get_task_priority
-     (task_id : os_task_id_param_t) return os_priority_t is
-     (os_task_ro (task_id).priority);
+   function os_get_task_priority (task_id : os_task_id_param_t) return os_priority_t is (os_task_ro (task_id).priority);
 
 end os_task_ro;

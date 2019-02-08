@@ -1,10 +1,11 @@
-with Interfaces;   use Interfaces;
-with os_arch;      use os_arch;
-with os_task_ro;   use os_task_ro;
+with Interfaces;      use Interfaces;
+with os_arch;         use os_arch;
+with os_task_ro;      use os_task_ro;
 with os_task_current; use os_task_current;
 
 package body os with
-     Spark_Mode is
+   Spark_Mode
+ is
 
    ----------------------------------
    -- Private functions/procedures --
@@ -14,15 +15,14 @@ package body os with
    -- os_sched_schedule --
    -----------------------
 
-   procedure os_sched_schedule (task_id : out os_task_id_param_t)
-   with
-      Global => (Input => os_task_ro.OS_Task_RO_State,
-                 In_Out => os_task_list.OS_Task_State,
-                 Output => os_task_current.Os_Task_Current_State),
-      Pre => os_task_list.os_ghost_task_list_is_well_formed,
-      Post => os_task_list.os_ghost_task_list_is_well_formed and then
-              os_task_list.os_ghost_task_is_ready (task_id) -- Q: os.adb:65:15: medium: postcondition might fail, cannot prove os_task_list.os_ghost_task_is_ready (task_id)
-   is
+   procedure os_sched_schedule (task_id : out os_task_id_param_t) with
+      Global => (Input => os_task_ro.OS_Task_RO_State, In_Out => os_task_list.OS_Task_State,
+       Output => os_task_current.Os_Task_Current_State),
+      Pre  => os_task_list.os_ghost_task_list_is_well_formed,
+      Post => os_task_list.os_ghost_task_list_is_well_formed
+      and then os_task_list.os_ghost_task_is_ready
+        (task_id) -- Q: os.adb:65:15: medium: postcondition might fail, cannot prove os_task_list.os_ghost_task_is_ready (task_id)
+    is
    begin
       --  Check interrupt status
       if os_arch_interrupt_is_pending = 1 then
@@ -47,35 +47,29 @@ package body os with
       --  Select the elected task as current task.
       os_sched_set_current_task_id (task_id);
 
-      --  Return the ID of the elected task to allow context switch at low
-      --  (arch) level
+      --  Return the ID of the elected task to allow context switch at low (arch) level
    end os_sched_schedule;
 
    ----------------------------
    -- os_mbx_get_posted_mask --
    ----------------------------
 
-   function os_mbx_get_posted_mask
-     (task_id : os_task_id_param_t) return os_mbx_mask_t
-   with
+   function os_mbx_get_posted_mask (task_id : os_task_id_param_t) return os_mbx_mask_t with
       Pre => os_task_mbx.os_ghost_task_mbx_are_well_formed (task_id)
-   is
+    is
       mbx_mask  : os_mbx_mask_t := 0;
       mbx_index : os_mbx_index_t;
    begin
 
       if not os_mbx_is_empty (task_id) then
          mbx_index := os_mbx_get_mbx_head (task_id);
-         for iterator in 1 .. os_mbx_get_mbx_count (task_id)
-         loop
+         for iterator in 1 .. os_mbx_get_mbx_count (task_id) loop
             if os_mbx_get_mbx_entry_sender (task_id, mbx_index) in os_task_id_param_t then
                mbx_mask :=
                  mbx_mask or
-                 os_mbx_mask_t (Shift_Left
-                                (Unsigned_32'(1),
-                                   Natural (os_mbx_get_mbx_entry_sender (task_id, mbx_index))));
+                 os_mbx_mask_t (Shift_Left (Unsigned_32'(1), Natural (os_mbx_get_mbx_entry_sender (task_id, mbx_index))));
             end if;
-            mbx_index := os_mbx_index_t'Succ(mbx_index);
+            mbx_index := os_mbx_index_t'Succ (mbx_index);
          end loop;
       end if;
 
@@ -86,32 +80,25 @@ package body os with
    -- os_mbx_send_one_task --
    --------------------------
 
-   procedure os_mbx_send_one_task
-     (status  : out os_status_t;
-      dest_id :     os_task_id_param_t;
-      mbx_msg :     os_mbx_msg_t)
-   with
-      Global => (Input  => (os_task_current.OS_Task_Current_State, os_task_ro.OS_Task_RO_State),
-                 In_Out => (os_task_list.OS_Task_State, os_task_mbx.OS_Task_Mbx_State)),
-      Pre => os_task_list.os_ghost_task_list_is_well_formed and then
-             os_task_list.os_ghost_current_task_is_ready and then
-             os_ghost_task_mbx_are_well_formed (dest_id),
-      Post => os_task_list.os_ghost_task_list_is_well_formed and then
-              os_task_list.os_ghost_current_task_is_ready and then -- Q: os.adb:139:15: medium: postcondition might fail, cannot prove os_task_list.os_ghost_current_task_is_ready
-              os_ghost_task_mbx_are_well_formed (dest_id)
-   is
+   procedure os_mbx_send_one_task (status : out os_status_t; dest_id : os_task_id_param_t; mbx_msg : os_mbx_msg_t) with
+      Global => (Input => (os_task_current.OS_Task_Current_State, os_task_ro.OS_Task_RO_State),
+       In_Out => (os_task_list.OS_Task_State, os_task_mbx.OS_Task_Mbx_State)),
+      Pre => os_task_list.os_ghost_task_list_is_well_formed and then os_task_list.os_ghost_current_task_is_ready
+      and then os_ghost_task_mbx_are_well_formed (dest_id),
+      Post => os_task_list.os_ghost_task_list_is_well_formed and then os_task_list.os_ghost_current_task_is_ready
+      and then -- Q: os.adb:139:15: medium: postcondition might fail, cannot prove os_task_list.os_ghost_current_task_is_ready
+      os_ghost_task_mbx_are_well_formed (dest_id)
+    is
       current        : constant os_task_id_param_t := os_sched_get_current_task_id;
-      mbx_permission : constant os_mbx_mask_t :=
-        os_mbx_get_mbx_permission (dest_id) and
-        os_mbx_mask_t (Shift_Left (Unsigned_32'(1), Natural (current)));
+      mbx_permission : constant os_mbx_mask_t      :=
+        os_mbx_get_mbx_permission (dest_id) and os_mbx_mask_t (Shift_Left (Unsigned_32'(1), Natural (current)));
    begin
       if mbx_permission /= 0 then
          if os_mbx_is_full (dest_id) then
             status := OS_ERROR_FIFO_FULL;
          else
             os_mbx_add_message (dest_id, current, mbx_msg);
-            if (os_mbx_get_waiting_mask (dest_id) and
-              os_mbx_mask_t (Shift_Left (Unsigned_32'(1), Natural (current)))) /= 0 then
+            if (os_mbx_get_waiting_mask (dest_id) and os_mbx_mask_t (Shift_Left (Unsigned_32'(1), Natural (current)))) /= 0 then
                os_sched_add_task_to_ready_list (dest_id);
             end if;
 
@@ -126,26 +113,22 @@ package body os with
    -- os_mbx_send_all_task --
    --------------------------
 
-   procedure os_mbx_send_all_task
-     (status  : out os_status_t;
-      mbx_msg :     os_mbx_msg_t)
-   with
-      Global => (Input  => (os_task_current.OS_Task_Current_State, os_task_ro.OS_Task_RO_State),
-                 In_Out => (os_task_list.OS_Task_State, os_task_mbx.OS_Task_Mbx_State)),
-       Pre => os_task_list.os_ghost_task_list_is_well_formed and then
-             os_task_list.os_ghost_current_task_is_ready and then
-             (for all iterator in os_task_id_param_t'range => os_ghost_task_mbx_are_well_formed (iterator)),
-      Post => os_task_list.os_ghost_task_list_is_well_formed and then
-              os_task_list.os_ghost_current_task_is_ready
-   is
+   procedure os_mbx_send_all_task (status : out os_status_t; mbx_msg : os_mbx_msg_t) with
+      Global => (Input => (os_task_current.OS_Task_Current_State, os_task_ro.OS_Task_RO_State),
+       In_Out => (os_task_list.OS_Task_State, os_task_mbx.OS_Task_Mbx_State)),
+      Pre => os_task_list.os_ghost_task_list_is_well_formed and then os_task_list.os_ghost_current_task_is_ready
+      and then (for all iterator in os_task_id_param_t'range => os_ghost_task_mbx_are_well_formed (iterator)),
+      Post => os_task_list.os_ghost_task_list_is_well_formed and then os_task_list.os_ghost_current_task_is_ready
+    is
       ret : os_status_t;
    begin
       status := OS_ERROR_DENIED;
 
       for iterator in os_task_id_param_t'range loop
-         pragma Loop_Invariant (os_task_list.os_ghost_task_list_is_well_formed and then
-             os_task_list.os_ghost_current_task_is_ready and then
-             os_ghost_task_mbx_are_well_formed (iterator));  -- Q: os.adb:187:14: medium: loop invariant might fail after first iteration, cannot prove os_ghost_task_mbx_are_well_formed (iterator)
+         pragma Loop_Invariant
+           (os_task_list.os_ghost_task_list_is_well_formed and then os_task_list.os_ghost_current_task_is_ready
+            and then os_ghost_task_mbx_are_well_formed
+              (iterator));  -- Q: os.adb:187:14: medium: loop invariant might fail after first iteration, cannot prove os_ghost_task_mbx_are_well_formed (iterator)
 
          os_mbx_send_one_task (ret, iterator, mbx_msg);
 
@@ -161,7 +144,6 @@ package body os with
       end loop;
    end os_mbx_send_all_task;
 
-
    ----------------------
    --  Ghost functions --
    ----------------------
@@ -171,67 +153,60 @@ package body os with
    ----------------------------------
 
    function os_ghost_mbx_are_well_formed return Boolean is
-      (for all task_id in os_task_id_param_t'range =>
-          os_task_mbx.os_ghost_task_mbx_are_well_formed (task_id));
+     (for all task_id in os_task_id_param_t'range => os_task_mbx.os_ghost_task_mbx_are_well_formed (task_id));
 
    -------------------------------------------------
    -- os_ghost_head_list_task_has_higher_priority --
    -------------------------------------------------
 
    function os_ghost_head_list_task_has_higher_priority return Boolean is
-      (os_sched_get_current_list_head /= OS_TASK_ID_NONE and then
-       os_task_list.os_ghost_task_is_ready (os_sched_get_current_list_head) and then
-         (for some task_id in os_task_id_param_t'range =>
-            os_task_list.os_ghost_task_is_ready (task_id) and then
-            os_get_task_priority (task_id)
-               <= os_get_task_priority (os_sched_get_current_list_head)))
-   with
+     (os_sched_get_current_list_head /= OS_TASK_ID_NONE
+      and then os_task_list.os_ghost_task_is_ready (os_sched_get_current_list_head)
+      and then
+      (for some task_id in os_task_id_param_t'range =>
+         os_task_list.os_ghost_task_is_ready (task_id)
+         and then os_get_task_priority (task_id) <= os_get_task_priority (os_sched_get_current_list_head))) with
       Ghost => true;
 
-   ----------------
-   -- Public API --
-   ----------------
+      ----------------
+      -- Public API --
+      ----------------
 
-   ----------------------------------
-   -- os_sched_get_current_task_id --
-   ----------------------------------
+      ----------------------------------
+      -- os_sched_get_current_task_id --
+      ----------------------------------
 
-   function os_sched_get_current_task_id return os_task_id_param_t
-   is (os_task_current.os_sched_get_current_task_id);
+   function os_sched_get_current_task_id return os_task_id_param_t is (os_task_current.os_sched_get_current_task_id);
 
    -------------------
    -- os_sched_wait --
    -------------------
 
-   procedure os_sched_wait
-     (task_id      : out os_task_id_param_t;
-      waiting_mask :     os_mbx_mask_t)
-   is
+   procedure os_sched_wait (task_id : out os_task_id_param_t; waiting_mask : os_mbx_mask_t) is
       tmp_mask : os_mbx_mask_t;
    begin
       task_id := os_sched_get_current_task_id;
-      pragma assert (os_ghost_task_mbx_are_well_formed (task_id));
+      pragma Assert (os_ghost_task_mbx_are_well_formed (task_id));
 
       tmp_mask := waiting_mask and os_mbx_get_mbx_permission (task_id);
 
       --  We remove the current task from the ready list.
       os_sched_remove_task_from_ready_list (task_id);
-      pragma assert (os_ghost_task_list_is_well_formed);
+      pragma Assert (os_ghost_task_list_is_well_formed);
 
       if tmp_mask /= 0 then
          os_mbx_set_waiting_mask (task_id, tmp_mask);
-      pragma assert (os_ghost_task_list_is_well_formed); -- Q: os.adb:223:22: medium: assertion might fail, cannot prove (os_ghost_task_list_is_well_formed), how to neutralize action of os_mbx_set_waiting_mask?
+         pragma Assert
+           (os_ghost_task_list_is_well_formed); -- Q: os.adb:223:22: medium: assertion might fail, cannot prove (os_ghost_task_list_is_well_formed), how to neutralize action of os_mbx_set_waiting_mask?
 
          tmp_mask := tmp_mask and os_mbx_get_posted_mask (task_id);
 
          if tmp_mask /= 0 then
-            --  If waited event is already here, put back the task in the
-            --  ready list (after tasks of same priority).
+            --  If waited event is already here, put back the task in the ready list (after tasks of same priority).
             os_sched_add_task_to_ready_list (task_id);
          end if;
       elsif task_id /= OS_INTERRUPT_TASK_ID then
-         --  This is an error/illegal case. There is nothing to wait for,
-         --  so put back the task in the ready list.
+         --  This is an error/illegal case. There is nothing to wait for, so put back the task in the ready list.
          os_sched_add_task_to_ready_list (task_id);
       end if;
 
@@ -243,8 +218,7 @@ package body os with
    -- os_sched_yield --
    --------------------
 
-   procedure os_sched_yield (task_id : out os_task_id_param_t)
-   is
+   procedure os_sched_yield (task_id : out os_task_id_param_t) is
    begin
       task_id := os_sched_get_current_task_id;
 
@@ -262,8 +236,7 @@ package body os with
    -- os_sched_exit --
    -------------------
 
-   procedure os_sched_exit (task_id : out os_task_id_param_t)
-   is
+   procedure os_sched_exit (task_id : out os_task_id_param_t) is
    begin
       task_id := os_sched_get_current_task_id;
 
@@ -278,8 +251,7 @@ package body os with
    -- os_init --
    -------------
 
-   procedure os_init (task_id : out os_task_id_param_t)
-   is
+   procedure os_init (task_id : out os_task_id_param_t) is
       prev_id : os_task_id_param_t := os_task_id_param_t'First;
    begin
       os_arch_cons_init;
@@ -301,7 +273,8 @@ package body os with
          os_ghost_task_ready_init (task_iterator);
       end loop;
 
-      os_sched_schedule (task_id); -- Q: os.adb:301:07: medium: precondition might fail, cannot prove os_ghost_task_list_is_well_formed for the first time after init
+      os_sched_schedule
+        (task_id); -- Q: os.adb:301:07: medium: precondition might fail, cannot prove os_ghost_task_list_is_well_formed for the first time after init
 
       os_arch_context_set (task_id);
 
@@ -312,10 +285,7 @@ package body os with
    -- os_mbx_receive --
    --------------------
 
-   procedure os_mbx_receive
-     (status    : out os_status_t;
-      mbx_entry : out os_mbx_entry_t)
-   is
+   procedure os_mbx_receive (status : out os_status_t; mbx_entry : out os_mbx_entry_t) is
       --  retrieve current task id
       current        : constant os_task_id_param_t := os_sched_get_current_task_id;
       mbx_index      : os_mbx_index_t;
@@ -348,18 +318,12 @@ package body os with
                   --  if this was the first mbx, we just increase the mbx head
                   os_mbx_inc_mbx_head (current);
                elsif iterator < os_mbx_get_mbx_count (current) then
-                  --  in other case, for now we "compact" the rest of the mbx
-                  --  queue, so that there is no "hole" in it for the next mbx
-                  --  search.
-                  for iterator2 in os_mbx_count_t'Succ (iterator) ..
-                          os_mbx_get_mbx_count (current)
-                  loop
+                  --  in other case, for now we "compact" the rest of the mbx queue, so that there is no "hole" in it for the next
+                  --  mbx search.
+                  for iterator2 in os_mbx_count_t'Succ (iterator) .. os_mbx_get_mbx_count (current) loop
                      pragma Loop_Invariant (not os_mbx_is_empty (current));
                      next_mbx_index := os_mbx_index_t'Succ (mbx_index);
-                     os_mbx_set_mbx_entry
-                       (current,
-                        mbx_index,
-                        os_mbx_get_mbx_entry (current, next_mbx_index));
+                     os_mbx_set_mbx_entry (current, mbx_index, os_mbx_get_mbx_entry (current, next_mbx_index));
                      mbx_index := next_mbx_index;
                   end loop;
                end if;
@@ -372,7 +336,7 @@ package body os with
                exit;
             end if;
             --  Compute the next mbx_index for the loop
-            mbx_index := os_mbx_index_t'Succ(mbx_index);
+            mbx_index := os_mbx_index_t'Succ (mbx_index);
          end loop;
       end if;
    end os_mbx_receive;
@@ -381,12 +345,8 @@ package body os with
    -- os_mbx_send --
    -----------------
 
-   procedure os_mbx_send
-     (status  : out os_status_t;
-      dest_id :     types.int8_t;
-      mbx_msg :     os_mbx_msg_t)
-   is
-      -- dest_id comes from uncontroled C calls
+   procedure os_mbx_send (status : out os_status_t; dest_id : types.int8_t; mbx_msg : os_mbx_msg_t) is
+   --  dest_id comes from uncontroled C calls
    begin
       if dest_id = OS_TASK_ID_ALL then
          os_mbx_send_all_task (status, mbx_msg);
