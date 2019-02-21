@@ -1,0 +1,26 @@
+with "Moth";
+project Test is
+
+   for Source_Dirs use ("tests");
+   for Object_Dir use "obj";
+   for Exec_Dir use "bin";
+   for Main use ("test01.adb");
+
+   package Compiler is
+      for Default_Switches ("ada") use ("-gnatw.eH.YD", "-gnatf", "-Wall", "-g", "-gnata", "-gnato", "-fstack-check");
+   end Compiler;
+
+   package Pretty_Printer is
+      for Default_Switches ("ada") use ("-N", "-c4", "-c3");
+   end Pretty_Printer;
+
+   package Binder is
+      for Switches ("ada") use ("-E");
+   end Binder;
+
+   package Linker is
+      for Switches ("ada") use ("-Wl,-no_pie");
+   end Linker;
+
+end Test;
+

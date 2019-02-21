@@ -48,8 +48,9 @@ is
    -- read_only_conf --
    --------------------
 
-   read_only_conf : constant array (os_task_id_param_t) of os_task_ro_t;
-   pragma Import (C, read_only_conf, "os_task_ro");
+   read_only_conf : constant array (os_task_id_param_t) of os_task_ro_t :=
+     (others => (0, 16#FF#, (0, 0), (0, 0), (0, 0)));
+--     pragma Import (C, read_only_conf, "os_task_ro");
 
    ------------------------
    -- get_mbx_permission --
