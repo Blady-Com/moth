@@ -568,7 +568,6 @@ is
    is
       tmp_mask : os_mbx_mask_t;
    begin
-      pragma assert (Moth.Mailbox.os_ghost_mbx_are_well_formed);
 
       task_id := os_task_current;
 

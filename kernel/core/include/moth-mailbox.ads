@@ -67,18 +67,14 @@ is
    function os_mbx_get_posted_mask
      (task_id : os_task_id_param_t) return os_mbx_mask_t
    with
-      Global => (Input => State),
-      Pre    => os_ghost_mbx_are_well_formed;
+      Global => (Input => State);
 
    -----------------
    -- mbx_receive --
    -----------------
 
    procedure receive (status    : out os_status_t;
-                      mbx_entry : out os_mbx_entry_t)
-   with
-      Pre    => os_ghost_mbx_are_well_formed,
-      Post   => os_ghost_mbx_are_well_formed;
+                      mbx_entry : out os_mbx_entry_t);
    pragma Export (C, receive, "os_mbx_receive");
 
    --------------
@@ -87,10 +83,7 @@ is
 
    procedure send (status  : out os_status_t;
                    dest_id :     types.int8_t;
-                   mbx_msg :     os_mbx_msg_t)
-   with
-      Pre    => os_ghost_mbx_are_well_formed,
-      Post   => os_ghost_mbx_are_well_formed;
+                   mbx_msg :     os_mbx_msg_t);
    pragma Export (C, send, "os_mbx_send");
 
    -------------------------------
@@ -99,7 +92,6 @@ is
 
    procedure init
    with
-      Global => (Output => State),
-      Post   => os_ghost_mbx_are_well_formed;
+      Global => (Output => State);
 
 end Moth.Mailbox;

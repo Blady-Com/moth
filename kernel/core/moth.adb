@@ -31,8 +31,7 @@ is
 
    procedure init (task_id : out os_task_id_param_t)
    with
-      Refined_post => Moth.Scheduler.os_ghost_task_list_is_well_formed and
-                      Moth.Mailbox.os_ghost_mbx_are_well_formed
+      Refined_post => Moth.Scheduler.os_ghost_task_list_is_well_formed
    is
    begin
       --  Init the console if any
