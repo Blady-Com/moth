@@ -55,7 +55,12 @@ is
       head             : os_mbx_index_t;
       count            : os_mbx_count_t;
       mbx_array        : os_mbx_t_array;
-   end record;
+   end record
+     with Predicate =>
+       (for all index in os_mbx_index_t'Range =>
+          (if (os_mbx_count_t(index) >= os_mbx_t.count)
+             then (os_mbx_t.mbx_array (os_mbx_t.head + index).sender_id = OS_TASK_ID_NONE)
+               else (os_mbx_t.mbx_array (os_mbx_t.head + index).sender_id in os_task_id_param_t)));
 
    -----------------------
    -- Private variables --
@@ -135,14 +140,27 @@ is
       Pre  => ((not mbx_is_full (dest_id)) and then
                mbx_are_well_formed),
       Post => ((not mbx_is_empty (dest_id)) and then
-               (mbx_fifo = mbx_fifo'Old'Update (dest_id => mbx_fifo'Old (dest_id)'Update (count => mbx_fifo'Old (dest_id).count + 1, head => mbx_fifo'Old (dest_id).head, mbx_array => mbx_fifo'Old (dest_id).mbx_array'Update (get_mbx_tail (dest_id) => mbx_fifo'Old (dest_id).mbx_array (get_mbx_tail (dest_id))'Update (sender_id => src_id, msg => mbx_msg))))) and then
+                (mbx_fifo (dest_id) = mbx_fifo'Old (dest_id)'Update
+                 (count => os_mbx_count_t'Succ(mbx_fifo'Old (dest_id).count),
+                  head => mbx_fifo'Old (dest_id).head,
+                  mbx_array => mbx_fifo'Old (dest_id).mbx_array'Update
+                  (get_mbx_tail (dest_id) => mbx_fifo'Old
+                     (dest_id).mbx_array (get_mbx_tail (dest_id))'Update
+                     (sender_id => src_id, msg => mbx_msg)))) and then
                mbx_are_well_formed)
    is
       mbx_index : constant os_mbx_index_t := get_mbx_head (dest_id) + get_mbx_count (dest_id);
    begin
-      mbx_fifo (dest_id).count :=  os_mbx_count_t'Succ (mbx_fifo (dest_id).count);
-      mbx_fifo (dest_id).mbx_array (mbx_index).sender_id := src_id;
-      mbx_fifo (dest_id).mbx_array (mbx_index).msg := mbx_msg;
+      mbx_fifo (dest_id) :=
+        mbx_fifo (dest_id)'Update (
+                                   -- increment count
+                                   count => os_mbx_count_t'Succ (mbx_fifo (dest_id).count),
+                                   -- head doesn't change
+                                   mbx_array => mbx_fifo (dest_id).mbx_array'Update (
+                                     -- modifiy the new mbx_entry
+                                     mbx_index => (
+                                                   sender_id => src_id,
+                                                   msg => mbx_msg)));
    end mbx_add_message;
 
    --------------------------
@@ -311,10 +329,18 @@ is
    is
       mbx_index   : constant os_mbx_index_t := get_mbx_head (task_id);
    begin
-      mbx_fifo (task_id).count := os_mbx_count_t'Pred (mbx_fifo (task_id).count);
-      mbx_fifo (task_id).head := os_mbx_index_t'Succ (mbx_fifo (task_id).head);
-      mbx_fifo (task_id).mbx_array (mbx_index).sender_id := OS_TASK_ID_NONE;
-      mbx_fifo (task_id).mbx_array (mbx_index).msg := 0;
+      mbx_fifo (task_id) :=
+         mbx_fifo (task_id)'Update (count =>
+            -- decrement count
+            os_mbx_count_t'Pred (mbx_fifo (task_id).count),
+                                    head =>
+            -- increment head
+            os_mbx_index_t'Succ (mbx_fifo (task_id).head),
+                                    mbx_array =>
+            -- erase mbx at previous head
+            mbx_fifo (task_id).mbx_array'Update (mbx_index =>
+               (sender_id => OS_TASK_ID_NONE,
+                msg => 0)));
    end remove_first_mbx;
 
    ---------------------
@@ -324,15 +350,21 @@ is
    procedure remove_last_mbx
       (task_id    : in os_task_id_param_t)
    with
-      Pre  => (not mbx_is_empty (task_id)) and mbx_are_well_formed,
+      Pre  => (not mbx_is_empty (task_id)),
       Post => (mbx_fifo = mbx_fifo'Old'Update (task_id => mbx_fifo'Old (task_id)'Update (count => os_mbx_count_t'Pred (mbx_fifo'Old (task_id).count), head => mbx_fifo'Old (task_id).head, mbx_array => mbx_fifo'Old (task_id).mbx_array'Update (mbx_fifo (task_id).head + mbx_fifo (task_id).count => (sender_id => OS_TASK_ID_NONE, msg => 0)))))
-              and mbx_are_well_formed
    is
       mbx_index   : constant os_mbx_index_t := get_mbx_tail (task_id);
    begin
-      mbx_fifo (task_id).count := os_mbx_count_t'Pred (mbx_fifo (task_id).count);
-      mbx_fifo (task_id).mbx_array (mbx_index).sender_id := OS_TASK_ID_NONE;
-      mbx_fifo (task_id).mbx_array (mbx_index).msg := 0;
+      mbx_fifo (task_id) :=
+         mbx_fifo (task_id)'Update (count =>
+            -- decrement count
+            os_mbx_count_t'Pred (mbx_fifo (task_id).count),
+            -- don't touch head
+            -- erase mbx at mbx tail
+                                    mbx_array =>
+            mbx_fifo (task_id).mbx_array'Update (mbx_index =>
+               (sender_id => OS_TASK_ID_NONE,
+                msg => 0)));
    end remove_last_mbx;
 
    --------------------
@@ -344,18 +376,15 @@ is
        index      : in os_mbx_count_t)
    with
       Pre => (not mbx_is_empty (task_id)) and
-             mbx_are_well_formed and
              (index > 0) and
              (index < os_mbx_count_t'Pred (get_mbx_count (task_id))),
-      Post => mbx_are_well_formed and
-              mbx_fifo (task_id).count = mbx_fifo'Old (task_id).count and
+      Post => mbx_fifo (task_id).count = mbx_fifo'Old (task_id).count and
               mbx_fifo (task_id).head = mbx_fifo'Old (task_id).head
    is
       mbx_index   : os_mbx_index_t;
    begin
       for iterator in index ..
                       os_mbx_count_t'Pred (get_mbx_count (task_id)) loop
-         pragma Loop_Invariant (mbx_are_well_formed);
 
          mbx_index := get_mbx_head (task_id) + iterator;
 
