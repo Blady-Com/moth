@@ -78,8 +78,8 @@ is
    package body M is
 
       function "<" (Left, Right : os_task_id_param_t) return Boolean is
-         (Moth.Config.get_task_priority (Left)
-               < Moth.Config.get_task_priority (Right));
+        (Moth.Config.get_task_priority (Left)
+         < Moth.Config.get_task_priority (Right)) with SPARK_Mode => Off;
 
       function "=" (X, Y : T) return Boolean is
          (X.Idle = Y.Idle and then X.Ready = Y.Ready);

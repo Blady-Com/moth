@@ -119,7 +119,9 @@ is
                                Contains (Model.Idle, task_id)))
       is
 
-         function "<" (Left, Right : os_task_id_param_t) return Boolean;
+         function "<" (Left, Right : os_task_id_param_t) return Boolean with
+           Global => null;
+         pragma Annotate (GNATprove, Terminating, "<");
 
          package S1 is new Ada.Containers.Formal_Ordered_Sets
             (Element_Type => os_task_id_param_t);
